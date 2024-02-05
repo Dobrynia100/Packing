@@ -44,11 +44,11 @@ void packUI::addProducts(product p,int count)//добавление издели
     if(products.count()!=0)
     {
 
-        QRectF textBoundingRect = labels.last()->boundingRect();  
+       
             last_width = products.last().getwidth();
 
         qDebug() << "ширина последнего: " << last_width;
-        qDebug() << products.last().getwidth() << " " << textBoundingRect.width() << endl;
+        qDebug() << products.last().getwidth()<< endl;
         qDebug() << labels.last()->scenePos().x() << endl;
     
         shift = labels.last()->scenePos().x() -p.getwidth()- (products.last().getwidth()/2) -25;
@@ -81,7 +81,7 @@ void packUI::addLabel(QGraphicsRectItem *rectangle,int count)//добавлен�
 
 
 }
-void packUI::on_ClearButton_clicked()
+void packUI::on_ClearButton_clicked()//очистка изделий
 {
     products.clear();
     labels.clear();
@@ -119,8 +119,6 @@ void packUI::on_PackButton_clicked()//кнопка упаковки
    ui->comboBox->currentIndex()!=1 ? List_width :List_width=List_width*100;
    List_height=ui->lineEdit_5->text().toInt();
    ui->comboBox_2->currentIndex()!=1 ? List_width : List_height=List_height*100;
-
-   qDebug() << ui->comboBox->currentIndex() << List_width<< ' ' << ui->comboBox_2->currentIndex() << List_height << endl;
 
    rectangle = new QGraphicsRectItem(0, 0, List_width, List_height);
 
@@ -213,7 +211,7 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             qDebug() << "x: " << x << " y:" << y << endl;
 
             rectangle = new QGraphicsRectItem(0, y, prod.getwidth(), prod.getheight()); 
-            rectangle->setPen(QColor(0, 0, 255));
+            
             prod.setPacked(true);
 
         }
