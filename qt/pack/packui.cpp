@@ -132,7 +132,7 @@ void packUI::check_all(int pog_meter)//проверка, упакованы ли
     bool b=true;
     QGraphicsTextItem* textItem;
     int count = products.size();
-    int y = 0;
+    int x = 0;
     float pm = pog_meter / static_cast<float>(100);
     for (int j = 0; j < products.size(); j++)
     {
@@ -140,24 +140,26 @@ void packUI::check_all(int pog_meter)//проверка, упакованы ли
         if (products[j].check() == false)
         {
             
-            QGraphicsTextItem* textItem = info_scene->addText("Не упакован номер "+ QString::number(j+1));
-            textItem->setPos(5, y);
-            y+=25;
+           if(b) QGraphicsTextItem* textItem = info_scene->addText("Не упаковано:");
+           textItem= info_scene->addText(QString::number(j + 1));
+           textItem->setPos(x, 25);
+            x+=15;
             b = false;
             count--;
         }
     }
     b ? textItem = info_scene->addText("Все изделия упакованы") : textItem = info_scene->addText("Можно выполнить изделий: "
         + QString::number(count));
-    textItem->setPos(1, y);
+    textItem->setPos(1, 50);
     qDebug() << pm << " " << pog_meter << endl;
-    textItem=info_scene->addText("\n Потребовалость " + QString::number(pm) + " погонного метра листового металла");
-    textItem->setPos(1, y+25);
+    textItem=info_scene->addText("\n Потребовалость " + QString::number(pm) + " погонного метра \nлистового металла (по горизонтали)");
+    textItem->setPos(1, 75);
 }
 void packUI::Packing(int List_width, int List_height)//упаковка методом полос
 {
 
     int list_square = List_width * List_height;
+    bool placement = true;
     if (List_height >= List_width)
     {
    
@@ -172,15 +174,16 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
         {
             if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
         }
+        placement = false;
     }
 
     int x = 0,y=0,xp=0,yp=0,pog_meter=0,first=0;
-    int i = 1;
+    int i = 0;
     bool first_check = true;
     for (product& prod : products)
     {
         
-       
+        i++;
         if (prod.getsquare() > list_square) continue;
         if (x + prod.getwidth() <= List_width && y + prod.getheight() <= List_height)
         {
@@ -188,26 +191,38 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight()); 
                      
             qDebug() << "x: " << x << " y:" << y << endl;
-            x += prod.getwidth();
+            placement?x += prod.getwidth():y+=prod.getheight();
             prod.setPacked(true);
             if (first_check) first = i;
-           
+            first_check = false;
         }
-        else if(y+products[first].getheight() <List_height)
+        
+        else if((prod.getwidth() <= List_width && y+products[first].getheight()+ prod.getheight() <=List_height)&&placement)
         {
             qDebug() << "Переход" << endl;
            
-            x = prod.getwidth();
-            y += products[first].getheight();
-
+                x = prod.getwidth(); 
+                y += products[first].getheight(); 
+           
             qDebug() << "x: " << x << " y:" << y << endl;
 
             rectangle = new QGraphicsRectItem(0, y, prod.getwidth(), prod.getheight()); 
-            first_check = false;
+            first_check = true;
             prod.setPacked(true);
             
 
         }
+        else if (!placement && (x + products[first].getwidth() + prod.getwidth() <= List_width && prod.getheight()<=List_height))//в угоду читаемости это условие отдельно
+        {
+            qDebug() << "Переход" << endl;
+            x += products[first].getwidth();
+            y = prod.getheight();
+
+            rectangle = new QGraphicsRectItem(x, 0, prod.getwidth(), prod.getheight());
+            first_check = true;
+            prod.setPacked(true);
+        }
+        
         if (x > pog_meter) pog_meter = x;//замер погонного метра по горизонтали
 
         rectangle->setPen(QColor(0, 0, 255));
@@ -219,7 +234,7 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             textItem->setPos(rectangle->sceneBoundingRect().center() - QPointF(textItem->boundingRect().width() / 2, textItem->boundingRect().height()));
         }
         pack_scene->addItem(rectangle);
-        i++;
+       
 
     }
     check_all(pog_meter);
