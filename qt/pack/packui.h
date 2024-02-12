@@ -24,7 +24,7 @@ private slots:
     void on_PackButton_clicked();
     void on_ClearButton_clicked();
     void on_pushButton_clicked();
-    void addProducts(product p,int count);//(int width,int height,int count);
+    void addProducts(product p,int count);
     void addLabel(QGraphicsRectItem *rectangle,int count);
 private:
     Ui::packUI *ui;
@@ -33,9 +33,7 @@ private:
     QGraphicsScene *pack_scene;
     QGraphicsScene *info_scene;
     QGraphicsRectItem *rectangle;
-    QLineEdit *lineEdit;
     QComboBox *comboBox;
-    //QList<QGraphicsRectItem*> products;
     QList <product> products;
     QList<QGraphicsTextItem*> labels;
     void Packing(int List_width, int List_height);

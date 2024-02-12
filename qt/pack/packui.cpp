@@ -16,17 +16,8 @@ packUI::packUI(QWidget *parent)
        ui->graphicsView->setScene(scene);
        ui->graphicsView_2->setScene(pack_scene);
        ui->graphicsView_3->setScene(info_scene);
-       
-       ui->lineEdit->setInputMask("9999");
-       ui->lineEdit_2->setInputMask("9999");
-       ui->lineEdit_3->setInputMask("9999");
-       ui->lineEdit_4->setInputMask("9999");
-       ui->lineEdit_5->setInputMask("9999");
-       
-       ui->lineEdit_3->setText("1");
-       
+     
 
-      
 
 }
 
@@ -91,9 +82,9 @@ void packUI::on_ClearButton_clicked()//очистка изделий
 void packUI::on_pushButton_clicked()//кнопка добавления изделий
 {
     int width=180,height=30,count=1;
-    width = ui->lineEdit->text().toInt();
-    height = ui->lineEdit_2->text().toInt();
-    count = ui->lineEdit_3->text().toInt();
+    width = ui->spinBox_4->text().toInt();
+    height = ui->spinBox_5->text().toInt();
+    count = ui->spinBox->text().toInt();
     product p{width,height};
     
     addProducts(p,count);
@@ -115,9 +106,9 @@ void packUI::CleanUp()//очистка сцен и обнуление упако
 void packUI::on_PackButton_clicked()//кнопка упаковки
 {
    int List_width=0,List_height=0;
-   List_width=ui->lineEdit_4->text().toInt();
+   List_width=ui->spinBox_2->text().toInt();
    ui->comboBox->currentIndex()!=1 ? List_width :List_width=List_width*100;
-   List_height=ui->lineEdit_5->text().toInt();
+   List_height=ui->spinBox_3->text().toInt();
    ui->comboBox_2->currentIndex()!=1 ? List_width : List_height=List_height*100;
 
    rectangle = new QGraphicsRectItem(0, 0, List_width, List_height);
@@ -167,7 +158,7 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
 {
 
     int list_square = List_width * List_height;
-    if (List_height > List_width)
+    if (List_height >= List_width)
     {
    
         for (int i = 0; i < products.size(); i++)
@@ -183,9 +174,9 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
         }
     }
 
-    int x = 0,y=0,xp=0,yp=0,pog_meter=0;
+    int x = 0,y=0,xp=0,yp=0,pog_meter=0,first=0;
     int i = 1;
-
+    bool first_check = true;
     for (product& prod : products)
     {
         
@@ -199,23 +190,25 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             qDebug() << "x: " << x << " y:" << y << endl;
             x += prod.getwidth();
             prod.setPacked(true);
+            if (first_check) first = i;
            
         }
-        else if(y+products[0].getheight() <List_height)
+        else if(y+products[first].getheight() <List_height)
         {
             qDebug() << "Переход" << endl;
-            
+           
             x = prod.getwidth();
-            y = products[0].getheight();
+            y += products[first].getheight();
 
             qDebug() << "x: " << x << " y:" << y << endl;
 
             rectangle = new QGraphicsRectItem(0, y, prod.getwidth(), prod.getheight()); 
-            
+            first_check = false;
             prod.setPacked(true);
+            
 
         }
-        if (x > pog_meter) pog_meter = x;//замер погонного метра
+        if (x > pog_meter) pog_meter = x;//замер погонного метра по горизонтали
 
         rectangle->setPen(QColor(0, 0, 255));
 
