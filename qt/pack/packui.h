@@ -37,6 +37,7 @@ private:
     QComboBox *comboBox;
     QList <product> products;
     QList<QGraphicsTextItem*> labels;
+    void Flip_Pack(product& prod, int x, int y);
     void Packing(int List_width, int List_height);
     void check_all(int pog_meter);
     void CleanUp();

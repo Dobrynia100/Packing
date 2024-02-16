@@ -40,7 +40,7 @@ void packUI::addProducts(product p,int count)//добавление издели
 
         qDebug() << "ширина последнего: " << last_width;
         qDebug() << products.last().getwidth()<< endl;
-        qDebug() << labels.last()->scenePos().x() << endl;
+     
     
         shift = labels.last()->scenePos().x() -p.getwidth()- (products.last().getwidth()/2) -25;
         qDebug() << shift << endl;
@@ -66,7 +66,7 @@ void packUI::addLabel(QGraphicsRectItem *rectangle,int count)//добавлен�
     QGraphicsTextItem *textItem = scene->addText(QString::number(width)+"*"+QString::number(height)+" x"+QString::number(count));
         textItem->setPos(rectangle->sceneBoundingRect().center() - QPointF(textItem->boundingRect().width() / 2, textItem->boundingRect().height()+10));
     qDebug()<<textItem->pos().x();
-    qDebug()<<textItem->scenePos();
+  
 
     labels.append(textItem);
 
@@ -91,14 +91,7 @@ void packUI::on_pushButton_clicked()//кнопка добавления изде
     scene->update();
 
 }
-int comparew(product& obj1, product& obj2)//сравнение широты изделий для сортировки
-{
-    return obj1.getwidth() > obj2.getwidth();
-}
-int compareh(product& obj1, product& obj2)//сравнение высоты изделий для сортировки
-{
-    return obj1.getheight() > obj2.getheight();
-}
+
 
 void packUI::CleanUp()//очистка сцен и обнуление упаковки введенных изделий
 {
@@ -160,50 +153,62 @@ void packUI::check_all(int pog_meter)//проверка, упакованы ли
     textItem=info_scene->addText("\n Потребовалость " + QString::number(pm) + " погонного метра \nлистового металла");
     textItem->setPos(1, 75);
 }
+int comparew(product& obj1, product& obj2)//сравнение широты изделий для сортировки
+{
+    return obj1.getwidth() > obj2.getwidth();
+}
+int compareh(product& obj1, product& obj2)//сравнение высоты изделий для сортировки
+{
+    return obj1.getheight() > obj2.getheight();
+}
+void vertical(QList <product> products)
+{
+    for (int i = 0; i < products.size(); i++)
+    {
+        if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
+
+    }
+    std::sort(products.begin(), products.end(), compareh);
+}
+void horizontal(QList <product> products)
+{
+    for (int i = 0; i < products.size(); i++)
+    {
+        if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
+    }
+    std::sort(products.begin(), products.end(), comparew);
+}
 bool packUI::rotation(int List_width, int List_height,bool placement)
 {
     if (ui->radioButton->isChecked())
     {
         if (List_height > List_width)
         {
-
-            for (int i = 0; i < products.size(); i++)
-            {
-                if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
-
-            }
-            std::sort(products.begin(), products.end(), compareh);
+            vertical(products);          
         }
         else if (List_height < List_width)
         {
-            for (int i = 0; i < products.size(); i++)
-            {
-                if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
-            }
-            std::sort(products.begin(), products.end(), comparew);
+            horizontal(products);
             placement = false;
         }
         else std::sort(products.begin(), products.end(), compareh);
     }
     else if (ui->radioButton_2->isChecked())
     {
-        for (int i = 0; i < products.size(); i++)
-        {
-            if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
-        }
-        std::sort(products.begin(), products.end(), comparew);
+        horizontal(products);
         placement = false;
     }
     else if (ui->radioButton_3->isChecked())
     {
-        for (int i = 0; i < products.size(); i++)
-        {
-            if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
-
-        }
-        std::sort(products.begin(), products.end(), compareh);
+        vertical(products);
     }
     return placement;
+}
+void packUI::Flip_Pack(product& prod, int x, int y)//поверуть изделие и упаковать
+{
+    prod.flip();
+    rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
+    prod.setPacked(true);
 }
 void packUI::Packing(int List_width, int List_height)//упаковка методом полос с модификацией
 {
@@ -264,24 +269,14 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             else if (y + prod.getwidth() <= stop_height && x + prod.getheight() <= products[first].getwidth())//поместится ли элемент в строчку если его повернуть?
             {
                 qDebug() << "4" << endl;
-
-                prod.flip();
-                rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
-                
+                Flip_Pack(prod, x, y);
                 x += prod.getheight();
-                
-                prod.setPacked(true);
             }
             else if (x + prod.getheight() <= stop_width && y + prod.getwidth() <= products[first].getheight())
             {
                 qDebug() << "5" << endl;
-
-                prod.flip();
-                rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
-              
+                Flip_Pack(prod, x, y);
                 y += prod.getwidth();
-                
-                prod.setPacked(true);
             }
             else if ((prod.getwidth() <= stop_width && y + products[first].getheight() + prod.getheight() <= stop_height) && placement)//переход на следующую строчку для вертикального расположения
             {
@@ -313,9 +308,9 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
             }
 
         }
-        pog_meter = (x > y) > pog_meter ? x : y;//замер погонного метра по горизонтали
+       
         
-        rectangle->setPen(QColor(0, 0, 255));
+        
         
         if (y >= ylim)//снятие лимита по ширине
         {         
@@ -324,7 +319,8 @@ void packUI::Packing(int List_width, int List_height)//упаковка мето
         }
         if (prod.check())//если изделие упаковано-отображается на сцене
         {
-            
+            pog_meter = (x > y) > pog_meter ? x : y;//замер погонного метра по горизонтали
+            rectangle->setPen(QColor(0, 0, 255));
             QGraphicsTextItem* textItem = pack_scene->addText(QString::number(i+1));
             textItem->setPos(rectangle->sceneBoundingRect().center() - QPointF(textItem->boundingRect().width() / 2, textItem->boundingRect().height()/2));
             pack_scene->addItem(rectangle);
