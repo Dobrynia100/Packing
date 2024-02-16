@@ -58,7 +58,3 @@ bool product::check()
 {
 	return packed;
 }
-bool product::compare(const product& obj1, const product& obj2)
-{
-	return obj1.square > obj2.square;
-}

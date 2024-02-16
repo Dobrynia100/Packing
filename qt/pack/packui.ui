@@ -262,16 +262,30 @@
        <property name="title">
         <string>Размер листа металла</string>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>40</y>
+          <y>20</y>
           <width>251</width>
-          <height>51</height>
+          <height>61</height>
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
+         <item row="1" column="2" alignment="Qt::AlignHCenter">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>x</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Ширина</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="4">
           <widget class="QComboBox" name="comboBox_2">
            <item>
@@ -284,27 +298,6 @@
              <string>М</string>
             </property>
            </item>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QComboBox" name="comboBox">
-           <item>
-            <property name="text">
-             <string>См</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>М</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="1" column="2" alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>x</string>
-           </property>
           </widget>
          </item>
          <item row="1" column="3">
@@ -323,6 +316,27 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>Высота</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBox">
+           <item>
+            <property name="text">
+             <string>См</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>М</string>
+            </property>
+           </item>
+          </widget>
+         </item>
          <item row="1" column="0">
           <widget class="QSpinBox" name="spinBox_2">
            <property name="minimumSize">
@@ -339,21 +353,56 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string>Ширина</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Высота</string>
-           </property>
-          </widget>
-         </item>
         </layout>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>80</y>
+          <width>271</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Располагать изделия:</string>
+        </property>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>251</width>
+           <height>19</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QRadioButton" name="radioButton">
+            <property name="text">
+             <string>Авто</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_2">
+            <property name="text">
+             <string>Горизонтально</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QRadioButton" name="radioButton_3">
+            <property name="text">
+             <string>Вертикально</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </item>

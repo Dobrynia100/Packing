@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <QGraphicsTextItem>
 #include <QComboBox>
+#include <QRadioButton>
 #include "product.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class packUI; }
@@ -39,5 +40,6 @@ private:
     void Packing(int List_width, int List_height);
     void check_all(int pog_meter);
     void CleanUp();
+    bool rotation(int List_width, int List_height, bool placement);
 };
 #endif // PACKUI_H

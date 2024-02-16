@@ -15,10 +15,12 @@
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
@@ -50,15 +52,21 @@ public:
     QGraphicsView *graphicsView;
     QPushButton *ClearButton;
     QGroupBox *groupBox_3;
-    QWidget *widget;
+    QWidget *layoutWidget2;
     QGridLayout *gridLayout_4;
-    QComboBox *comboBox_2;
-    QComboBox *comboBox;
     QLabel *label_7;
-    QSpinBox *spinBox_3;
-    QSpinBox *spinBox_2;
     QLabel *label_5;
+    QComboBox *comboBox_2;
+    QSpinBox *spinBox_3;
     QLabel *label_6;
+    QComboBox *comboBox;
+    QSpinBox *spinBox_2;
+    QGroupBox *groupBox_4;
+    QWidget *widget;
+    QHBoxLayout *horizontalLayout;
+    QRadioButton *radioButton;
+    QRadioButton *radioButton_2;
+    QRadioButton *radioButton_3;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -208,32 +216,30 @@ public:
         sizePolicy5.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
         groupBox_3->setSizePolicy(sizePolicy5);
         groupBox_3->setMinimumSize(QSize(70, 130));
-        widget = new QWidget(groupBox_3);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(10, 40, 251, 51));
-        gridLayout_4 = new QGridLayout(widget);
+        layoutWidget2 = new QWidget(groupBox_3);
+        layoutWidget2->setObjectName(QString::fromUtf8("layoutWidget2"));
+        layoutWidget2->setGeometry(QRect(10, 20, 251, 61));
+        gridLayout_4 = new QGridLayout(layoutWidget2);
         gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
         gridLayout_4->setContentsMargins(0, 0, 0, 0);
-        comboBox_2 = new QComboBox(widget);
+        label_7 = new QLabel(layoutWidget2);
+        label_7->setObjectName(QString::fromUtf8("label_7"));
+
+        gridLayout_4->addWidget(label_7, 1, 2, 1, 1, Qt::AlignHCenter);
+
+        label_5 = new QLabel(layoutWidget2);
+        label_5->setObjectName(QString::fromUtf8("label_5"));
+
+        gridLayout_4->addWidget(label_5, 0, 0, 1, 1);
+
+        comboBox_2 = new QComboBox(layoutWidget2);
         comboBox_2->addItem(QString());
         comboBox_2->addItem(QString());
         comboBox_2->setObjectName(QString::fromUtf8("comboBox_2"));
 
         gridLayout_4->addWidget(comboBox_2, 1, 4, 1, 1);
 
-        comboBox = new QComboBox(widget);
-        comboBox->addItem(QString());
-        comboBox->addItem(QString());
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
-
-        gridLayout_4->addWidget(comboBox, 1, 1, 1, 1);
-
-        label_7 = new QLabel(widget);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
-
-        gridLayout_4->addWidget(label_7, 1, 2, 1, 1, Qt::AlignHCenter);
-
-        spinBox_3 = new QSpinBox(widget);
+        spinBox_3 = new QSpinBox(layoutWidget2);
         spinBox_3->setObjectName(QString::fromUtf8("spinBox_3"));
         spinBox_3->setMinimumSize(QSize(70, 0));
         spinBox_3->setMinimum(1);
@@ -241,7 +247,19 @@ public:
 
         gridLayout_4->addWidget(spinBox_3, 1, 3, 1, 1);
 
-        spinBox_2 = new QSpinBox(widget);
+        label_6 = new QLabel(layoutWidget2);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+
+        gridLayout_4->addWidget(label_6, 0, 3, 1, 1);
+
+        comboBox = new QComboBox(layoutWidget2);
+        comboBox->addItem(QString());
+        comboBox->addItem(QString());
+        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+
+        gridLayout_4->addWidget(comboBox, 1, 1, 1, 1);
+
+        spinBox_2 = new QSpinBox(layoutWidget2);
         spinBox_2->setObjectName(QString::fromUtf8("spinBox_2"));
         spinBox_2->setMinimumSize(QSize(70, 0));
         spinBox_2->setMinimum(1);
@@ -249,15 +267,30 @@ public:
 
         gridLayout_4->addWidget(spinBox_2, 1, 0, 1, 1);
 
-        label_5 = new QLabel(widget);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
+        groupBox_4 = new QGroupBox(groupBox_3);
+        groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
+        groupBox_4->setGeometry(QRect(0, 80, 271, 51));
+        widget = new QWidget(groupBox_4);
+        widget->setObjectName(QString::fromUtf8("widget"));
+        widget->setGeometry(QRect(10, 20, 251, 19));
+        horizontalLayout = new QHBoxLayout(widget);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
+        radioButton = new QRadioButton(widget);
+        radioButton->setObjectName(QString::fromUtf8("radioButton"));
+        radioButton->setChecked(true);
 
-        gridLayout_4->addWidget(label_5, 0, 0, 1, 1);
+        horizontalLayout->addWidget(radioButton);
 
-        label_6 = new QLabel(widget);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
+        radioButton_2 = new QRadioButton(widget);
+        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
 
-        gridLayout_4->addWidget(label_6, 0, 3, 1, 1);
+        horizontalLayout->addWidget(radioButton_2);
+
+        radioButton_3 = new QRadioButton(widget);
+        radioButton_3->setObjectName(QString::fromUtf8("radioButton_3"));
+
+        horizontalLayout->addWidget(radioButton_3);
 
 
         gridLayout_3->addWidget(groupBox_3, 0, 0, 1, 1);
@@ -289,15 +322,19 @@ public:
         groupBox_2->setTitle(QApplication::translate("packUI", "\320\222\321\213\320\261\321\200\320\260\320\275\320\275\321\213\320\265 \320\270\320\267\320\264\320\265\320\273\320\270\321\217", nullptr));
         ClearButton->setText(QApplication::translate("packUI", "\320\236\321\207\320\270\321\201\321\202\320\270\321\202\321\214 \321\201\320\277\320\270\321\201\320\276\320\272 \320\270\320\267\320\264\320\265\320\273\320\270\320\271", nullptr));
         groupBox_3->setTitle(QApplication::translate("packUI", "\320\240\320\260\320\267\320\274\320\265\321\200 \320\273\320\270\321\201\321\202\320\260 \320\274\320\265\321\202\320\260\320\273\320\273\320\260", nullptr));
+        label_7->setText(QApplication::translate("packUI", "x", nullptr));
+        label_5->setText(QApplication::translate("packUI", "\320\250\320\270\321\200\320\270\320\275\320\260", nullptr));
         comboBox_2->setItemText(0, QApplication::translate("packUI", "\320\241\320\274", nullptr));
         comboBox_2->setItemText(1, QApplication::translate("packUI", "\320\234", nullptr));
 
+        label_6->setText(QApplication::translate("packUI", "\320\222\321\213\321\201\320\276\321\202\320\260", nullptr));
         comboBox->setItemText(0, QApplication::translate("packUI", "\320\241\320\274", nullptr));
         comboBox->setItemText(1, QApplication::translate("packUI", "\320\234", nullptr));
 
-        label_7->setText(QApplication::translate("packUI", "x", nullptr));
-        label_5->setText(QApplication::translate("packUI", "\320\250\320\270\321\200\320\270\320\275\320\260", nullptr));
-        label_6->setText(QApplication::translate("packUI", "\320\222\321\213\321\201\320\276\321\202\320\260", nullptr));
+        groupBox_4->setTitle(QApplication::translate("packUI", "\320\240\320\260\321\201\320\277\320\276\320\273\320\260\320\263\320\260\321\202\321\214 \320\270\320\267\320\264\320\265\320\273\320\270\321\217:", nullptr));
+        radioButton->setText(QApplication::translate("packUI", "\320\220\320\262\321\202\320\276", nullptr));
+        radioButton_2->setText(QApplication::translate("packUI", "\320\223\320\276\321\200\320\270\320\267\320\276\320\275\321\202\320\260\320\273\321\214\320\275\320\276", nullptr));
+        radioButton_3->setText(QApplication::translate("packUI", "\320\222\320\265\321\200\321\202\320\270\320\272\320\260\320\273\321\214\320\275\320\276", nullptr));
     } // retranslateUi
 
 };

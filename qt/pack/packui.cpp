@@ -53,10 +53,10 @@ void packUI::addProducts(product p,int count)//добавление издели
     }
 
     scene->addItem(rectangle);
-
+   
     for(int i=0;i<count;i++) products.append(p);
     addLabel(rectangle,count);
-
+    ui->ClearButton->setText("Очистить список изделий (" + QString::number(products.count()) + ")");
 }
 void packUI::addLabel(QGraphicsRectItem *rectangle,int count)//добавления подписи(размер,количество) для изображений изделий
 {
@@ -91,16 +91,21 @@ void packUI::on_pushButton_clicked()//кнопка добавления изде
     scene->update();
 
 }
-int compare(product& obj1, product& obj2)//сравнение площадей изделий для сортировки
+int comparew(product& obj1, product& obj2)//сравнение широты изделий для сортировки
 {
-    return obj1.getsquare() > obj2.getsquare();
+    return obj1.getwidth() > obj2.getwidth();
+}
+int compareh(product& obj1, product& obj2)//сравнение высоты изделий для сортировки
+{
+    return obj1.getheight() > obj2.getheight();
 }
 
 void packUI::CleanUp()//очистка сцен и обнуление упаковки введенных изделий
 {
+    qDebug() << "Очищение сцен" << endl;
     pack_scene->clear();
     info_scene->clear();
-    for (product& prod : products)prod.setPacked(false);
+    for (product& prod : products) { prod.setPacked(false); prod.setcoords(0, 0); }
   
 }
 void packUI::on_PackButton_clicked()//кнопка упаковки
@@ -116,11 +121,11 @@ void packUI::on_PackButton_clicked()//кнопка упаковки
    CleanUp();
    pack_scene->addItem(rectangle);
    
-
-   std::sort(products.begin(), products.end(), compare);//сортировка по убыванию
-   qDebug() << products.first().getsquare();
-
-   if (products.last().getsquare() > (List_height * List_height)) 
+   if (products.count()==0)
+   {
+       QGraphicsTextItem* textItem = info_scene->addText("Добавьте хотя бы одно изделие");
+   }
+   else if (products.last().getsquare() > (List_height * List_height)) 
    { QGraphicsTextItem* textItem = info_scene->addText("Ни одно изделие нельзя упаковать"); 
    } 
    else Packing(List_width,List_height);
@@ -136,7 +141,7 @@ void packUI::check_all(int pog_meter)//проверка, упакованы ли
     float pm = pog_meter / static_cast<float>(100);
     for (int j = 0; j < products.size(); j++)
     {
-        qDebug() << products[j].check() << endl;
+        qDebug() << products[j].check() <<"  ";
         if (products[j].check() == false)
         {
             
@@ -152,89 +157,183 @@ void packUI::check_all(int pog_meter)//проверка, упакованы ли
         + QString::number(count));
     textItem->setPos(1, 50);
     qDebug() << pm << " " << pog_meter << endl;
-    textItem=info_scene->addText("\n Потребовалость " + QString::number(pm) + " погонного метра \nлистового металла (по горизонтали)");
+    textItem=info_scene->addText("\n Потребовалость " + QString::number(pm) + " погонного метра \nлистового металла");
     textItem->setPos(1, 75);
 }
-void packUI::Packing(int List_width, int List_height)//упаковка методом полос
+bool packUI::rotation(int List_width, int List_height,bool placement)
 {
-
-    int list_square = List_width * List_height;
-    bool placement = true;
-    if (List_height >= List_width)
+    if (ui->radioButton->isChecked())
     {
-   
-        for (int i = 0; i < products.size(); i++)
+        if (List_height > List_width)
         {
-            if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
+
+            for (int i = 0; i < products.size(); i++)
+            {
+                if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
+
+            }
+            std::sort(products.begin(), products.end(), compareh);
         }
+        else if (List_height < List_width)
+        {
+            for (int i = 0; i < products.size(); i++)
+            {
+                if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
+            }
+            std::sort(products.begin(), products.end(), comparew);
+            placement = false;
+        }
+        else std::sort(products.begin(), products.end(), compareh);
     }
-    else
+    else if (ui->radioButton_2->isChecked())
     {
         for (int i = 0; i < products.size(); i++)
         {
             if (products[i].getwidth() < products[i].getheight()) products[i].flip();//изделия размещаются горизонтально
         }
+        std::sort(products.begin(), products.end(), comparew);
         placement = false;
     }
+    else if (ui->radioButton_3->isChecked())
+    {
+        for (int i = 0; i < products.size(); i++)
+        {
+            if (products[i].getwidth() > products[i].getheight()) products[i].flip();//изделия размещаются вертикально
 
-    int x = 0,y=0,xp=0,yp=0,pog_meter=0,first=0;
+        }
+        std::sort(products.begin(), products.end(), compareh);
+    }
+    return placement;
+}
+void packUI::Packing(int List_width, int List_height)//упаковка методом полос с модификацией
+{
+
+    int list_square = List_width * List_height;
+    bool placement = true;
+    int x = 0, y = 0, xp = 0, yp = 0, pog_meter = 0, first = 0, stop_width = List_width, stop_height = List_height,ylim=0;
     int i = 0;
     bool first_check = true;
+
+    rotation(List_width , List_height, placement);
+
+    
     for (product& prod : products)
     {
         
-        i++;
+        qDebug() << i+1 << ":";
         if (prod.getsquare() > list_square) continue;
-        if (x + prod.getwidth() <= List_width && y + prod.getheight() <= List_height)
+        if (!first_check && products[i - 1].check())//если можно поместить текущий элемент над предыдущем в текущую строчку
         {
-           
-            rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight()); 
-                     
-            qDebug() << "x: " << x << " y:" << y << endl;
-            placement?x += prod.getwidth():y+=prod.getheight();
-            prod.setPacked(true);
-            if (first_check) first = i;
-            first_check = false;
+            qDebug() << "x: " << x << " y:" << y << endl;           
+            if (products[i-1].gety() + products[i - 1].getheight() + prod.getheight() <= products[first].getheight() && x - products[i - 1].getwidth() + prod.getwidth() <= stop_width)
+            {
+                qDebug() << "1" << endl;
+                rectangle = new QGraphicsRectItem(x - products[i - 1].getwidth(), products[i - 1].gety() + prod.getheight(), prod.getwidth(), prod.getheight());
+                prod.setPacked(true);
+                
+                
+            }
+            else if (products[i - 1].getx() +products[i-1].getwidth() + prod.getwidth() <= products[first].getwidth() && y-products[i - 1].getheight() + prod.getheight() <= stop_height)
+            {
+                qDebug() << "2" << endl;
+                rectangle = new QGraphicsRectItem(products[i - 1].getx() + prod.getwidth(), y - products[i - 1].getheight(), prod.getwidth(), prod.getheight());
+
+                prod.setPacked(true);
+                
+            }
         }
+        if (!prod.check()) {
+            if (x + prod.getwidth() <= stop_width && y + prod.getheight() <= stop_height) //помещение элементов в строку
+            {
+                
+                if (i > 0 && prod.getheight() > products[i - 1].getheight())//Если текущий элемент оказался выше предыдущего ставим лимит по ширине
+                {
+                    stop_width = x;
+                    ylim = y + prod.getheight();
+                }
+                rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
+                
+                qDebug() << "3" << endl;
+                qDebug() << "x: " << x << " y:" << y << endl;
+                placement ? x += prod.getwidth() : y += prod.getheight();
+                prod.setPacked(true);
+                
+                if (first_check) first = i;
+                first_check = false;
+            }
+            else if (y + prod.getwidth() <= stop_height && x + prod.getheight() <= products[first].getwidth())//поместится ли элемент в строчку если его повернуть?
+            {
+                qDebug() << "4" << endl;
+
+                prod.flip();
+                rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
+                
+                x += prod.getheight();
+                
+                prod.setPacked(true);
+            }
+            else if (x + prod.getheight() <= stop_width && y + prod.getwidth() <= products[first].getheight())
+            {
+                qDebug() << "5" << endl;
+
+                prod.flip();
+                rectangle = new QGraphicsRectItem(x, y, prod.getwidth(), prod.getheight());
+              
+                y += prod.getwidth();
+                
+                prod.setPacked(true);
+            }
+            else if ((prod.getwidth() <= stop_width && y + products[first].getheight() + prod.getheight() <= stop_height) && placement)//переход на следующую строчку для вертикального расположения
+            {
+                qDebug() << "Переход" << endl;
+
+                x = prod.getwidth();
+                y += products[first].getheight();
+                
+                qDebug() << "x: " << x << " y:" << y << endl;
+                qDebug() << "6" << endl;
+                rectangle = new QGraphicsRectItem(0, y, prod.getwidth(), prod.getheight());
+                
+                first = i;
+                prod.setPacked(true);
+
+
+            }
+            else if (!placement && (x + products[first].getwidth() + prod.getwidth() <= stop_width && prod.getheight() <= stop_height))//переход для горизонтального
+            {
+                qDebug() << "Переход" << endl;
+                x += products[first].getwidth();
+                y = prod.getheight();
+                qDebug() << "7" << endl;
+                rectangle = new QGraphicsRectItem(x, 0, prod.getwidth(), prod.getheight());
+                
+                first = i;
+                prod.setPacked(true);
+                
+            }
+
+        }
+        pog_meter = (x > y) > pog_meter ? x : y;//замер погонного метра по горизонтали
         
-        else if((prod.getwidth() <= List_width && y+products[first].getheight()+ prod.getheight() <=List_height)&&placement)
-        {
-            qDebug() << "Переход" << endl;
-           
-                x = prod.getwidth(); 
-                y += products[first].getheight(); 
-           
-            qDebug() << "x: " << x << " y:" << y << endl;
-
-            rectangle = new QGraphicsRectItem(0, y, prod.getwidth(), prod.getheight()); 
-            first_check = true;
-            prod.setPacked(true);
-            
-
-        }
-        else if (!placement && (x + products[first].getwidth() + prod.getwidth() <= List_width && prod.getheight()<=List_height))//в угоду читаемости это условие отдельно
-        {
-            qDebug() << "Переход" << endl;
-            x += products[first].getwidth();
-            y = prod.getheight();
-
-            rectangle = new QGraphicsRectItem(x, 0, prod.getwidth(), prod.getheight());
-            first_check = true;
-            prod.setPacked(true);
-        }
-        
-        if (x > pog_meter) pog_meter = x;//замер погонного метра по горизонтали
-
         rectangle->setPen(QColor(0, 0, 255));
-
+        
+        if (y >= ylim)//снятие лимита по ширине
+        {         
+            stop_width = List_width;
+            ylim = 0;
+        }
         if (prod.check())//если изделие упаковано-отображается на сцене
         {
-            prod.setcoords(x, y);
-            QGraphicsTextItem* textItem = pack_scene->addText(QString::number(i));
-            textItem->setPos(rectangle->sceneBoundingRect().center() - QPointF(textItem->boundingRect().width() / 2, textItem->boundingRect().height()));
+            
+            QGraphicsTextItem* textItem = pack_scene->addText(QString::number(i+1));
+            textItem->setPos(rectangle->sceneBoundingRect().center() - QPointF(textItem->boundingRect().width() / 2, textItem->boundingRect().height()/2));
+            pack_scene->addItem(rectangle);
+            qDebug() << rectangle->sceneBoundingRect().x() << " " << rectangle->sceneBoundingRect().y() << endl;
+            prod.setcoords(rectangle->sceneBoundingRect().x(), rectangle->sceneBoundingRect().y());
         }
-        pack_scene->addItem(rectangle);
-       
+        
+        if ((y == List_height && x + prod.getwidth() == List_width) || (y + prod.getheight() == List_height && x == List_width))break;
+        i++;
 
     }
     check_all(pog_meter);

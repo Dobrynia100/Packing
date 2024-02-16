@@ -19,7 +19,6 @@ class product
         void print();
         void flip();
         bool check();
-        bool compare(const product &obj1, const product &obj2);
-   
+        
 };
 
